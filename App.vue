@@ -27,13 +27,11 @@ export default {
 
     const openModal = () => {
       isModalOpen.value = true;
-      // Push state to track modal open
       window.history.pushState({ modalOpen: true }, "", "");
     };
 
     const closeModal = () => {
       isModalOpen.value = false;
-      // Go back to previous state
       window.history.back();
     };
 
@@ -46,23 +44,26 @@ export default {
       }
     };
 
+    const handleLoad = () => {
+      if (window.history.state?.modalOpen) {
+        isModalOpen.value = true;
+      } else {
+        isModalOpen.value = false;
+      }
+    };
+
     const handleExternalLinkClick = (event) => {
-      // Save the current state so it can be restored after navigating away
       window.history.pushState({ modalOpen: isModalOpen.value }, "", "");
     };
 
     onMounted(() => {
       window.addEventListener("popstate", handlePopState);
-      window.addEventListener("load", () => {
-        // Restore modal state on page load
-        if (window.history.state?.modalOpen) {
-          isModalOpen.value = true;
-        }
-      });
+      window.addEventListener("load", handleLoad);
     });
 
     onUnmounted(() => {
       window.removeEventListener("popstate", handlePopState);
+      window.removeEventListener("load", handleLoad);
     });
 
     return {
